@@ -1,8 +1,13 @@
 import 'dart:convert';
-import 'package:flutter_appl/signin.dart';
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_appl/signin.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'components/songs.dart';
 
 class Home extends StatefulWidget {
   Home({Key key, this.api}) : super(key: key);
@@ -17,6 +22,8 @@ class _HomeState extends State<Home> {
   SharedPreferences _sharedPreferences;
 
   String _token = "";
+  File _avatarUri;
+  int _itemsLength = 10;
 
   Map<String, String> get headers => {
         "Content-Type": "application/json",
@@ -61,31 +68,110 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Widget _androidDrawer() {
+    return Drawer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(color: Colors.green),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Icon(
+                Icons.account_circle,
+                color: Colors.green.shade800,
+                size: 96,
+              ),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.music_note),
+            title: Text("Songs"),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.chat),
+            title: Text("News"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push<void>(
+                  context, MaterialPageRoute(builder: (context) => Scaffold()));
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.people),
+            title: Text("Profile"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push<void>(
+                  context, MaterialPageRoute(builder: (context) => Scaffold()));
+            },
+          ),
+          // Long drawer contents are often segmented.
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Divider(),
+          ),
+          ListTile(
+            leading: Icon(Icons.settings),
+            title: Text("Settings"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push<void>(
+                  context, MaterialPageRoute(builder: (context) => Scaffold()));
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _listBuilder(BuildContext context, int index) {
+    if (index >= _itemsLength) return null;
+
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: Hero(
+        tag: index,
+        child: HeroAnimatingSongCard(
+          song: "Hello A $index",
+          color: Colors.amber,
+          heroAnimation: AlwaysStoppedAnimation(0),
+          onPressed: () => Navigator.of(context).push<void>(
+            MaterialPageRoute(
+              builder: (context) => Scaffold(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Flutter Example",
-          style: TextStyle(
-            color: Colors.white,
+        title: Text("Songs"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () {},
           ),
-        ),
-        actions: <Widget>[
-          ElevatedButton.icon(
-            label: Text("Logout"),
-            onPressed: onLogout,
-            icon: Icon(Icons.logout, color: Colors.white),
+          IconButton(
+            icon: Icon(Icons.shuffle),
+            onPressed: () {},
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          decoration: new BoxDecoration(color: Colors.white10),
-          width: double.infinity,
-          child: Column(
-            children: [],
-          ),
+      drawer: _androidDrawer(),
+      body: RefreshIndicator(
+        onRefresh: () {},
+        child: ListView.builder(
+          padding: EdgeInsets.symmetric(vertical: 12),
+          itemBuilder: _listBuilder,
         ),
       ),
     );

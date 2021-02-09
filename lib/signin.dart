@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'components/loader.dart';
+
 class SignIn extends StatefulWidget {
   SignIn({Key key, this.api}) : super(key: key);
 
@@ -90,78 +92,82 @@ class _SignInState extends State<SignIn> {
                 margin: EdgeInsets.only(bottom: 50.0),
                 child: Image.asset('images/free.png'),
               ),
-              Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      style: TextStyle(fontSize: 18.0),
-                      decoration: const InputDecoration(
-                          hintText: 'Enter your email',
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.all(1.0),
-                            child: Icon(Icons.email),
-                          )),
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter email';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        setState(() {
-                          _email = value;
-                        });
-                      },
-                    ),
-                    TextFormField(
-                      keyboardType: TextInputType.visiblePassword,
-                      obscureText: !_togglePasswordDisplay,
-                      style: TextStyle(fontSize: 18.0),
-                      decoration: InputDecoration(
-                        hintText: 'Enter your password',
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _togglePasswordDisplay = !_togglePasswordDisplay;
-                            });
-                          },
-                          icon: Icon(Icons.remove_red_eye),
-                        ),
+              _isLoading
+                  ? Loader()
+                  : Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          TextFormField(
+                            keyboardType: TextInputType.emailAddress,
+                            style: TextStyle(fontSize: 18.0),
+                            decoration: const InputDecoration(
+                              hintText: 'Enter your email',
+                              suffixIcon: Padding(
+                                padding: EdgeInsets.all(1.0),
+                                child: Icon(Icons.email),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter email';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              setState(() {
+                                _email = value;
+                              });
+                            },
+                          ),
+                          TextFormField(
+                            keyboardType: TextInputType.visiblePassword,
+                            obscureText: !_togglePasswordDisplay,
+                            style: TextStyle(fontSize: 18.0),
+                            decoration: InputDecoration(
+                              hintText: 'Enter your password',
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _togglePasswordDisplay =
+                                        !_togglePasswordDisplay;
+                                  });
+                                },
+                                icon: Icon(Icons.remove_red_eye),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter password';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              setState(() {
+                                _password = value;
+                              });
+                            },
+                          ),
+                          SizedBox(
+                            width: double.infinity,
+                            child: Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  _formKey.currentState.save();
+                                  if (_formKey.currentState.validate()) {
+                                    // Process signing in.
+                                    signIn(_email, _password);
+                                  }
+                                },
+                                child: Text('Submit'),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter password';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        setState(() {
-                          _password = value;
-                        });
-                      },
                     ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            _formKey.currentState.save();
-                            if (_formKey.currentState.validate()) {
-                              // Process signing in.
-                              signIn(_email, _password);
-                            }
-                          },
-                          child: Text('Submit'),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
