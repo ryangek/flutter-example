@@ -12,9 +12,9 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Example',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
       ),
-      home: Home(api: "http://192.168.1.57:9999/api"),
+      home: Home(api: "http://192.168.1.41:9999/api"),
     );
   }
 }

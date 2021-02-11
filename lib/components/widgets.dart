@@ -6,37 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// A simple widget that builds different things on different platforms.
-class PlatformWidget extends StatelessWidget {
-  const PlatformWidget({
-    Key key,
-    @required this.androidBuilder,
-    @required this.iosBuilder,
-  })  : assert(androidBuilder != null),
-        assert(iosBuilder != null),
-        super(key: key);
-
-  final WidgetBuilder androidBuilder;
-  final WidgetBuilder iosBuilder;
-
-  @override
-  Widget build(context) {
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-        return androidBuilder(context);
-      case TargetPlatform.iOS:
-        return iosBuilder(context);
-      default:
-        assert(false, 'Unexpected platform $defaultTargetPlatform');
-        return null;
-    }
-  }
-}
-
-/// A platform-agnostic card with a high elevation that reacts when tapped.
-///
-/// This is an example of a custom widget that an app developer might create for
-/// use on both iOS and Android as part of their brand's unique design.
 class PressableCard extends StatefulWidget {
   const PressableCard({
     this.onPressed,
@@ -130,17 +99,15 @@ class _PressableCardState extends State<PressableCard>
   }
 }
 
-/// A platform-agnostic card representing a song which can be in a card state,
-/// a flat state or anything in between.
-///
-/// When it's in a card state, it's pressable.
-///
-/// This is an example of a custom widget that an app developer might create for
-/// use on both iOS and Android as part of their brand's unique design.
 class HeroAnimatingSongCard extends StatelessWidget {
   HeroAnimatingSongCard(
-      {this.song, this.color, this.heroAnimation, this.onPressed});
+      {this.imageUri,
+      this.song,
+      this.color,
+      this.heroAnimation,
+      this.onPressed});
 
+  final String imageUri;
   final String song;
   final Color color;
   final Animation<double> heroAnimation;
@@ -168,6 +135,21 @@ class HeroAnimatingSongCard extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
+                Positioned(
+                    bottom: 80,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 170,
+                      color: Colors.black26,
+                      child: imageUri == null
+                          ? null
+                          : Image(
+                              fit: BoxFit.fitWidth,
+                              alignment: Alignment.center,
+                              image: NetworkImage(imageUri),
+                            ),
+                    )),
                 // The song title banner slides off in the hero animation.
                 Positioned(
                   bottom: -80 * heroAnimation.value,
@@ -175,7 +157,7 @@ class HeroAnimatingSongCard extends StatelessWidget {
                   right: 0,
                   child: Container(
                     height: 80,
-                    color: Colors.black12,
+                    color: Colors.white10,
                     alignment: Alignment.centerLeft,
                     padding: EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
@@ -188,21 +170,21 @@ class HeroAnimatingSongCard extends StatelessWidget {
                   ),
                 ),
                 // The play button grows in the hero animation.
-                Padding(
-                  padding:
-                      EdgeInsets.only(bottom: 45) * (1 - heroAnimation.value),
-                  child: Container(
-                    height: playButtonSize,
-                    width: playButtonSize,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.black12,
-                    ),
-                    alignment: Alignment.center,
-                    child: Icon(Icons.play_arrow,
-                        size: playButtonSize, color: Colors.black38),
-                  ),
-                ),
+                // Padding(
+                //   padding:
+                //       EdgeInsets.only(bottom: 45) * (1 - heroAnimation.value),
+                //   child: Container(
+                //     height: playButtonSize,
+                //     width: playButtonSize,
+                //     decoration: BoxDecoration(
+                //       shape: BoxShape.circle,
+                //       color: Colors.black12,
+                //     ),
+                //     alignment: Alignment.center,
+                //     child: Icon(Icons.play_arrow,
+                //         size: playButtonSize, color: Colors.black38),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -212,10 +194,6 @@ class HeroAnimatingSongCard extends StatelessWidget {
   }
 }
 
-/// A loading song tile's silhouette.
-///
-/// This is an example of a custom widget that an app developer might create for
-/// use on both iOS and Android as part of their brand's unique design.
 class SongPlaceholderTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -271,16 +249,6 @@ class SongPlaceholderTile extends StatelessWidget {
   }
 }
 
-// ===========================================================================
-// Non-shared code below because different interfaces are shown to prompt
-// for a multiple-choice answer.
-//
-// This is a design choice and you may want to do something different in your
-// app.
-// ===========================================================================
-/// This uses a platform-appropriate mechanism to show users multiple choices.
-///
-/// On Android, it uses a dialog with radio buttons. On iOS, it uses a picker.
 void showChoices(BuildContext context, List<String> choices) {
   switch (defaultTargetPlatform) {
     case TargetPlatform.android:
